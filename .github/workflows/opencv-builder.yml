@@ -115,13 +115,22 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          path: ${GITHUB_WORKSPACE}/release
+          path: download
+
+      - name: Move files
+        run: |
+            cd ${GITHUB_WORKSPACE}
+            mkdir release
+            mv download/*/* ${GITHUB_WORKSPACE}/release/
+            cd ${GITHUB_WORKSPACE}/release
+            sha256sum --tag * > ${GITHUB_WORKSPACE}/hashes.txt
 
       - name: Upload Release
         uses: softprops/action-gh-release@v1
         with:
+          body_path: hashes.txt
           tag_name: ${{ env.OPENCV_REF }}
           files: |
-            ${GITHUB_WORKSPACE}/release/*/*
+            release/*
 
 
