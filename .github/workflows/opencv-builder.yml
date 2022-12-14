@@ -118,13 +118,13 @@ jobs:
         run: |
             cd ${GITHUB_WORKSPACE}
             cd build
-            tar -czvf OpenCV-${{ PKG_SUFFIX }}.tar.gz opencv
+            tar -czvf OpenCV-${{ env.PKG_SUFFIX }}.tar.gz opencv
 
       - name: Upload OpenCV
         uses: actions/upload-artifact@v3
         with:
-          name: opencv-${{ PKG_SUFFIX }}
-          path: build/OpenCV-${{ PKG_SUFFIX }}.tar.gz
+          name: opencv-${{ env.PKG_SUFFIX }}
+          path: build/OpenCV-${{ env.PKG_SUFFIX }}.tar.gz
 
   upload-release:
     needs: build-opencv
