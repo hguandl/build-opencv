@@ -18,7 +18,12 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos, ubuntu, windows]
+        os: [ubuntu, windows]
+        include:
+          - os: macos
+            arch: arm64
+          - os: macos
+            arch: x86_64
 
     defaults:
       run:
@@ -58,10 +63,17 @@ jobs:
           
       - name: Setup macOS environment
         if: runner.os == 'macOS'
+        env:
+          ARCH: ${{ matrix.arch }}
         run: |
-          echo 'X86_64=1' >> $GITHUB_ENV
-          echo 'AARCH64=1' >> $GITHUB_ENV
-          echo 'CMAKE_OSX_ARCHITECTURES="arm64;x86_64"' >> $GITHUB_ENV
+          if [[ "$ARCH" = "arm64" ]]; then
+            echo 'AARCH64=1' >> $GITHUB_ENV
+            echo 'CMAKE_OSX_ARCHITECTURES='arm64' >> $GITHUB_ENV
+          fi
+          if [[ "$ARCH" = "x86_64" ]]; then
+            echo 'X86_64=1' >> $GITHUB_ENV
+            echo 'CMAKE_OSX_ARCHITECTURES='x86_64' >> $GITHUB_ENV
+          fi
 
       - name: Clone OpenCV
         uses: actions/checkout@v3
