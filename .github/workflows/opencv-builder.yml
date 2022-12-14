@@ -107,18 +107,24 @@ jobs:
         run: |
             cd ${GITHUB_WORKSPACE}/opencv/build
             cmake --build . --config Release --target install --parallel ${PARALLEL_JOBS:-$(nproc --all)}
+            
+      - name: Setup package name
+        run: |
+          PKG_SUFFIX=${{ runner.os }}
+          [[ ${{ runner.os }} = "macos" ]] && PKG_SUFFIX=$PKG_SUFFIX-${{ runner.arch }}
+          echo "PKG_SUFFIX=${PKG_SUFFIX}" >> $GITHUB_ENV
 
       - name: Package OpenCV
         run: |
             cd ${GITHUB_WORKSPACE}
             cd build
-            tar -czvf OpenCV-${{ runner.os }}.tar.gz opencv
+            tar -czvf OpenCV-${{ PKG_SUFFIX }}.tar.gz opencv
 
       - name: Upload OpenCV
         uses: actions/upload-artifact@v3
         with:
-          name: opencv-${{ runner.os }}
-          path: build/OpenCV-${{ runner.os }}.tar.gz
+          name: opencv-${{ PKG_SUFFIX }}
+          path: build/OpenCV-${{ PKG_SUFFIX }}.tar.gz
 
   upload-release:
     needs: build-opencv
